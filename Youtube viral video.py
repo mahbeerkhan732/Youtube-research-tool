@@ -6,7 +6,7 @@ import os
 import time
 
 # YouTube API Configuration (use Streamlit secrets for security)
-API_KEY = st.secrets["AIzaSyBA-WdCo1FfkfQ1G5k5M3AFTV0x-kq9IlU"]  # Ensure the API key is in the secrets file
+API_KEY = ["AIzaSyBA-WdCo1FfkfQ1G5k5M3AFTV0x-kq9IlU"]  # Ensure the API key is in the secrets file
 YOUTUBE_SEARCH_URL = "https://www.googleapis.com/youtube/v3/search"
 YOUTUBE_VIDEO_URL = "https://www.googleapis.com/youtube/v3/videos"
 YOUTUBE_CHANNEL_URL = "https://www.googleapis.com/youtube/v3/channels"
