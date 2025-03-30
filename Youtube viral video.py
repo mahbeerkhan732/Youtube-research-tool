@@ -2,7 +2,6 @@ import streamlit as st
 import requests
 import pandas as pd
 from datetime import datetime, timedelta
-from textblob import TextBlob
 from sklearn.feature_extraction.text import TfidfVectorizer
 import numpy as np
 
