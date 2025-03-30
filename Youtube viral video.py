@@ -8,7 +8,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 import numpy as np
 
 # YouTube API Configuration
-API_KEY = "YOUR_API_KEY"  # Replace with your API key
+API_KEY = "AIzaSyBA-WdCo1FfkfQ1G5k5M3AFTV0x-kq9IlU"  # Replace with your API key
 YOUTUBE_SEARCH_URL = "https://www.googleapis.com/youtube/v3/search"
 YOUTUBE_VIDEO_URL = "https://www.googleapis.com/youtube/v3/videos"
 YOUTUBE_CHANNEL_URL = "https://www.googleapis.com/youtube/v3/channels"
