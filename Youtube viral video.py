@@ -1,11 +1,15 @@
 import streamlit as st
 import requests
 import pandas as pd
+import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
+from textblob import TextBlob
+from sklearn.feature_extraction.text import TfidfVectorizer
+import os
+import time
 
-
-# YouTube API Configuration
-API_KEY = "AIzaSyBA-WdCo1FfkfQ1G5k5M3AFTV0x-kq9IlU"  # Replace with your API key
+# YouTube API Configuration (use Streamlit secrets for security)
+API_KEY = st.secrets["AIzaSyBA-WdCo1FfkfQ1G5k5M3AFTV0x-kq9IlU"]  # Ensure the API key is in the secrets file
 YOUTUBE_SEARCH_URL = "https://www.googleapis.com/youtube/v3/search"
 YOUTUBE_VIDEO_URL = "https://www.googleapis.com/youtube/v3/videos"
 YOUTUBE_CHANNEL_URL = "https://www.googleapis.com/youtube/v3/channels"
@@ -25,8 +29,26 @@ with st.sidebar:
 # Dynamic Keyword Management
 st.subheader("🎯 Keywords")
 uploaded_file = st.file_uploader("Upload CSV with Keywords (or use defaults)", type=["csv"])
+
+# Handling CSV upload
 if uploaded_file:
-    keywords = pd.read_csv(uploaded_file)["Keyword"].tolist()
+    try:
+        df = pd.read_csv(uploaded_file)
+        df.columns = df.columns.str.strip()  # Strip extra spaces from column names
+        if "Keyword" in df.columns:
+            keywords = df["Keyword"].tolist()
+        else:
+            st.warning("CSV file doesn't contain a 'Keyword' column. Using default keywords.")
+            keywords = [
+                "Affair Relationship Stories", "Reddit Update", "Reddit Relationship Advice",
+                "Cheating Story Real", "True Cheating Story", "Surviving Infidelity"
+            ]
+    except Exception as e:
+        st.error(f"Error reading CSV file: {str(e)}")
+        keywords = [
+            "Affair Relationship Stories", "Reddit Update", "Reddit Relationship Advice",
+            "Cheating Story Real", "True Cheating Story", "Surviving Infidelity"
+        ]
 else:
     keywords = [
         "Affair Relationship Stories", "Reddit Update", "Reddit Relationship Advice",
@@ -60,6 +82,9 @@ if st.button("🚀 Fetch & Analyze Data"):
                 "key": API_KEY,
             }
             response = requests.get(YOUTUBE_SEARCH_URL, params=search_params)
+            if response.status_code != 200:
+                st.error(f"Failed to fetch data for keyword '{keyword}': {response.status_code}")
+                continue
             data = response.json()
 
             if "items" not in data:
@@ -76,6 +101,9 @@ if st.button("🚀 Fetch & Analyze Data"):
                     "id": video_id,
                     "key": API_KEY
                 })
+                if stats_response.status_code != 200:
+                    st.error(f"Failed to fetch video stats for {video_id}: {stats_response.status_code}")
+                    continue
                 stats_data = stats_response.json().get("items", [{}])[0]
 
                 # Fetch Channel Stats
@@ -84,6 +112,9 @@ if st.button("🚀 Fetch & Analyze Data"):
                     "id": channel_id,
                     "key": API_KEY
                 })
+                if channel_response.status_code != 200:
+                    st.error(f"Failed to fetch channel stats for {channel_id}: {channel_response.status_code}")
+                    continue
                 channel_data = channel_response.json().get("items", [{}])[0]
 
                 # Extract Data
@@ -108,6 +139,9 @@ if st.button("🚀 Fetch & Analyze Data"):
                         "Sentiment": sentiment_label,
                         "Channel": video["snippet"]["channelTitle"]
                     })
+
+            # Add a small delay to prevent hitting API rate limits
+            time.sleep(1)
 
         # Display Results
         if all_results:
@@ -134,7 +168,7 @@ if st.button("🚀 Fetch & Analyze Data"):
             st.subheader("🎥 Top Videos")
             for _, row in df.head(3).iterrows():
                 st.video(row["URL"])
-                st.write(f"{row['Title']}** | Views: {row['Views']} | Sentiment: {row['Sentiment']}")
+                st.write(f"{row['Title']} | Views: {row['Views']} | Sentiment: {row['Sentiment']}")
 
             # Export Data
             st.download_button(
