@@ -1,7 +1,10 @@
-
 import streamlit as st
 import requests
 import pandas as pd
+import matplotlib.pyplot as plt
+from datetime import datetime, timedelta  # This import is correct
+from textblob import TextBlob
+from sklearn.feature_extraction.text import TfidfVectorizer
 import numpy as np
 
 # YouTube API Configuration
@@ -22,16 +25,16 @@ with st.sidebar:
     max_subs = st.number_input("Max Subscribers:", min_value=0, value=3000)
     language = st.selectbox("Language:", ["en", "hi", "es", "fr"])  # English, Hindi, Spanish, French
 
-# Keyword Input Field
+# Dynamic Keyword Management
 st.subheader("🎯 Keywords")
-keyword_input = st.text_area("Paste your keywords (comma-separated):", placeholder="e.g., Tech News, Viral Stories, Political Updates")
-
-# Process Keywords
-if keyword_input:
-    keywords = [keyword.strip() for keyword in keyword_input.split(",")]
-    st.success(f"✅ {len(keywords)} keywords loaded!")
+uploaded_file = st.file_uploader("Upload CSV with Keywords (or use defaults)", type=["csv"])
+if uploaded_file:
+    keywords = pd.read_csv(uploaded_file)["Keyword"].tolist()
 else:
-    st.warning("Please paste your keywords above.")
+    keywords = [
+        "Affair Relationship Stories", "Reddit Update", "Reddit Relationship Advice",
+        "Cheating Story Real", "True Cheating Story", "Surviving Infidelity"
+    ]
 
 # AI-Powered Keyword Expansion (TF-IDF based)
 if st.checkbox("🔍 Use AI to Expand Keywords"):
@@ -42,9 +45,10 @@ if st.checkbox("🔍 Use AI to Expand Keywords"):
     st.success(f"Added AI-suggested keywords: {', '.join(additional_keywords)}")
 
 # Fetch Data Button
-if st.button("🚀 Fetch & Analyze Data") and keyword_input:
+if st.button("🚀 Fetch & Analyze Data"):
     try:
-        start_date = (datetime.utcnow() - timedelta(days=days)).isoformat("T") + "Z"
+        # FIXED: Properly using datetime module
+        start_date = (datetime.now() - timedelta(days=days)).strftime('%Y-%m-%dT%H:%M:%SZ')
         all_results = []
 
         for keyword in keywords:
