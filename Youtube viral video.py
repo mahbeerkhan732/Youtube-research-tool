@@ -36,6 +36,7 @@ if st.checkbox("🔍 Use AI to Expand Keywords"):
 # Fetch Data Button
 if st.button("🚀 Fetch & Analyze Data"):
     try:
+        # Fixed: Properly using datetime module
         start_date = (datetime.now() - timedelta(days=days)).strftime('%Y-%m-%dT%H:%M:%SZ')
         all_results = []
 
