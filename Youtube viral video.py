@@ -1,9 +1,6 @@
 import streamlit as st
 import requests
 import pandas as pd
-import matplotlib.pyplot as plt
-from datetime import datetime, timedelta  # This import is correct
-from textblob import TextBlob
 from sklearn.feature_extraction.text import TfidfVectorizer
 import numpy as np
 
