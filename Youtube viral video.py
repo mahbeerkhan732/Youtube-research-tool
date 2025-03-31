@@ -1,8 +1,7 @@
 import streamlit as st
 import requests
 import pandas as pd
-from sklearn.feature_extraction.text import TfidfVectorizer
-import numpy as np
+
 
 # YouTube API Configuration
 API_KEY = "AIzaSyBA-WdCo1FfkfQ1G5k5M3AFTV0x-kq9IlU"  # Replace with your API key
