@@ -1,7 +1,7 @@
 import streamlit as st
 import requests
 import pandas as pd
-
+import matplotlib.pyplot as plt
 
 # YouTube API Configuration
 API_KEY = "AIzaSyBA-WdCo1FfkfQ1G5k5M3AFTV0x-kq9IlU"  # Replace with your API key
@@ -21,16 +21,10 @@ with st.sidebar:
     max_subs = st.number_input("Max Subscribers:", min_value=0, value=3000)
     language = st.selectbox("Language:", ["en", "hi", "es", "fr"])  # English, Hindi, Spanish, French
 
-# Dynamic Keyword Management
+# Manual Keyword Input
 st.subheader("🎯 Keywords")
-uploaded_file = st.file_uploader("Upload CSV with Keywords (or use defaults)", type=["csv"])
-if uploaded_file:
-    keywords = pd.read_csv(uploaded_file)["Keyword"].tolist()
-else:
-    keywords = [
-        "Affair Relationship Stories", "Reddit Update", "Reddit Relationship Advice",
-        "Cheating Story Real", "True Cheating Story", "Surviving Infidelity"
-    ]
+keywords_input = st.text_area("Enter Keywords (comma-separated):", "Affair Relationship Stories, Reddit Update, Reddit Relationship Advice, Cheating Story Real, True Cheating Story, Surviving Infidelity")
+keywords = [keyword.strip() for keyword in keywords_input.split(",")]
 
 # AI-Powered Keyword Expansion (TF-IDF based)
 if st.checkbox("🔍 Use AI to Expand Keywords"):
@@ -43,7 +37,6 @@ if st.checkbox("🔍 Use AI to Expand Keywords"):
 # Fetch Data Button
 if st.button("🚀 Fetch & Analyze Data"):
     try:
-        # FIXED: Properly using datetime module
         start_date = (datetime.now() - timedelta(days=days)).strftime('%Y-%m-%dT%H:%M:%SZ')
         all_results = []
 
